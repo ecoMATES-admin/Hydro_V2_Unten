@@ -2,24 +2,30 @@
 #define GLOBAL_VARIABLES_H
 
 //## Pinning##
-//#Sensoren
-#define T&H 3
+//#Sensors
+#define TempHum 3
 #define WaterTemp 4
 #define Trig A2
 #define Echo A1
-//#Aktoren
-#define Pumpe 6
+//#Actuators
+#define Pump 6
 #define LED 7
 #define DIMM 0
-#define Umluft 10
+#define Circulation 10
 
-//##Variablen##
+//##Variables##
+//#SystemClock
+unsigned long previousTime = 0; 
+unsigned long sampInterval = 10; // milliseconds
 //#SystemTiming
+int timer = 0;
+bool sampleFlagBottom = false;
 
-//#FSM_Sensordaten
+//#FSM_Sensordata
 uint8_t sensorState =0; 
+float tempHumVal[2] = {0};
 enum SensorStates{
-  Idle, ReadTempUnten, ReadPH, ReadEC, ReadTempWasser
+  Idle, ReadTempBottom,ReadTempWater, RequestPH, RequestEC, ReadPH, ReadEC, 
 };
 
 
