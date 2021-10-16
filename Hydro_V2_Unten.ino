@@ -9,22 +9,23 @@
 //##Object intialization##
 //#TempHum#
 #define DHTTYPE DHT22 
-DHT dht(TempHum, DHTTYPE);
+DHT dhtSensor(TempHum, DHTTYPE);
 //#Watertemp
 OneWire oneWire(WaterTemp);
-DallasTemperature waterTemp(&oneWire);
+DallasTemperature waterTempSensor(&oneWire);
 //#PH&EC#
-Ezo_board EC = Ezo_board(99, "PH");      
-Ezo_board RTD = Ezo_board(101, "EC");
+Ezo_board phSensor(99, "PH");      
+Ezo_board ecSensor(101, "EC");
 
 void setup() {
   Serial.begin(9600);
-  dht.begin();
+  dhtSensor.begin();
+  Wire.begin();
 }
 
 void loop() {
   unsigned long currentTime = millis();
-  if ( currentTime - previousTime >= sampInterval ) {
+  if ( currentTime - previousTime >= systemPeriod ) {
     previousTime = currentTime;
     timer++;
     if (timer>= 1000){
