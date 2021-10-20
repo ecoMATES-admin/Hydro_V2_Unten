@@ -1,13 +1,13 @@
 
 void FSM_Sensordata() {
   switch (sensorState) {
-    case Idle:
+    case sensorStates::Idle:
       if (sampleFlagBottom) {
         sampleFlagBottom = false;
-        sensorState++;
+        sensorState=sensorStates::ReadTempBottom;
       }
       break;
-    case ReadTempBottom:
+    case sensorStates::ReadTempBottom:
       if (!dhtSensor.readTempAndHumidity(tempHumVal)) {
         if (DEBUG) {
           Serial.print("H1: ");
@@ -17,12 +17,12 @@ void FSM_Sensordata() {
           Serial.print(tempHumVal[1]);
           Serial.println(" *C");
         }
-        sensorState++;
+        sensorState = sensorStates::ReadTempWater;
       } else {
         Serial.println("Error: Failed to get temprature and humidity value.");
       }
       break;
-    case ReadTempWater:
+    case sensorStates::ReadTempWater:
       waterTempSensor.requestTemperatures();
       waterTempVal = waterTempSensor.getTempCByIndex(0);
       if (DEBUG) {
@@ -33,21 +33,21 @@ void FSM_Sensordata() {
           Serial.println(waterTempVal);
         }
       }
-      sensorState++;
+      sensorState = sensorStates::RequestEZO;
       break;
-    case RequestEZO:
+    case sensorStates::RequestEZO:
       phSensor.send_read_with_temp_comp(waterTempVal);
       ecSensor.send_read_with_temp_comp(waterTempVal);
-      sensorState++;
+      sensorState = sensorStates::AwaitEZO;
       break;
-    case AwaitEZO:
-      counterEZO++;
-      if (counterEZO * systemPeriod >= 900) {
-        counterEZO = 0;
-        sensorState++;
+    case sensorStates::AwaitEZO:
+      sensorCounter++;
+      if (sensorCounter * systemPeriod >= 900) {
+        sensorCounter = 0;
+        sensorState=sensorStates::ReadEZO;
       }
       break;
-    case ReadEZO:
+    case sensorStates::ReadEZO:
       phSensor.receive_read_cmd();
       ecSensor.receive_read_cmd();
       if (phSensor.get_error() == Ezo_board::SUCCESS) {
@@ -69,7 +69,7 @@ void FSM_Sensordata() {
         Serial.print("EC: ");
         Serial.println(ecVal);
       }
-      sensorState = 0;
+      sensorState = sensorStates::Idle;
       break;
     default:
       Serial.println("Error: FSM_Sensordata default state");
