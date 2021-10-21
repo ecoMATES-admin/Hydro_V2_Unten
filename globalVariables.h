@@ -41,8 +41,34 @@ uint16_t pumpCounter = 0;
 float distance = 0;
 float n = 600;
 float meanDistance = 0;
+typedef struct {uint8_t x; float y;} point;
+const uint8_t waterLevelArraySize = 19;
+point point2, point1;
+float m, waterLevel = 0;
+point waterLevelArray [waterLevelArraySize] = 
+{
+{0, 32.89},
+{1, 31.86},
+{2, 29.99},
+{3, 28.94},
+{4, 27.86},
+{5, 26.11},
+{6, 25.06},
+{7, 23.29},
+{8, 22.34},
+{9, 20.81},
+{10, 20.48},
+{11, 18.87},
+{12, 17.25},
+{13, 16.34},
+{14, 14.99},
+{15, 14.34},
+{16, 13.64},
+{17, 12.57},
+{18, 11.18}
+};
 enum class pumpStates:uint8_t{
-  Idle, PumpOn, PumpOff, ReadWaterLevel
+  Idle, PumpOn, PumpOff, ReadWaterDistance, CalculateWaterLevel
 };
 pumpStates  pumpState = pumpStates::Idle;
 

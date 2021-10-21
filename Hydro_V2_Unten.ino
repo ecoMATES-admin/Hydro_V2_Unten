@@ -35,7 +35,7 @@ void loop() {
     previousTime = currentTime;
 
     //#State Machines
-    FSM_Sensordata();
+    //FSM_Sensordata();
     FSM_Pump();
     masterDummy();
 
