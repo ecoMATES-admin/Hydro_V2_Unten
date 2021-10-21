@@ -39,7 +39,7 @@ sensorStates sensorState =sensorStates::Idle;
 //#FSM_Pump
 uint16_t pumpCounter = 0;
 float distance = 0;
-float n = 6000;
+float n = 600;
 float meanDistance = 0;
 enum class pumpStates:uint8_t{
   Idle, PumpOn, PumpOff, ReadWaterLevel
