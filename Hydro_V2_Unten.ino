@@ -5,9 +5,11 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <HCSR04.h>
+#include <mcp2515.h>
 //##Header-Files##
 #include "globalVariables.h"
 #include "MOSFET.h"
+#include "CAN.h"
 //##Object intialization##
 //#TempHum#
 #define DHTTYPE DHT22
@@ -22,14 +24,26 @@ Ezo_board ecSensor(101, "EC");
 HCSR04 hc(Trig, Echo); //HCSR04 (trig pin , echo pin)
 //#Mosfet
 MOSFET fan(CirculationFan);
+//#Can
+CanBuffer canBuffer;
+CanFloatBuffer canFloatBuffer;
+//Objects Can Comm
+volatile CanFrameStream cfStream;
+MCP2515 mcp2515(A3); //SS pin A3
+
 void setup() {
   //#Objects
   Serial.begin(9600);
   dhtSensor.begin();
   Wire.begin();
+  SPI.usingInterrupt(0);
+  mcp2515.reset();
+  mcp2515.setBitrate(CAN_1000KBPS, MCP_16MHZ);
+  mcp2515.setNormalMode();
   //#Pins
   pinMode(Pump, OUTPUT);
-  pumpFlag = true;
+  attachInterrupt(0, irqHandler, FALLING);
+  pumpFlag = true; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 }
 
 void loop() {
@@ -41,6 +55,7 @@ void loop() {
     //FSM_Sensordata();
     FSM_Pump();
     FSM_CirculationFan();
+    FSM_CanRead();
     masterDummy();
 
   }

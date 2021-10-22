@@ -13,6 +13,9 @@
 #define DIMM 0
 #define CirculationFan 10
 
+#define MSB 1
+#define LSB 0
+
 //##Variables##
 //#Debug#
 #define DEBUG 1
@@ -78,5 +81,14 @@ enum class circulationFanStates:uint8_t{
   FanOn, FanOff
 };
 circulationFanStates circulationFanState = circulationFanStates::FanOn;
+
+//#FSM_CanRead#
+volatile bool interrupt = false;
+volatile bool mcp2515_overflow = false;
+volatile bool arduino_overflow = false;
+union my_can_msg {
+  unsigned long value;
+  unsigned char bytes[4];
+};
 
 #endif
