@@ -2,6 +2,7 @@
 #define GLOBAL_VARIABLES_H
 
 //## Pinning##
+#define InterruptPin 0 //Arduino pin 2
 //#Sensors
 #define TempHum 3
 #define WaterTemp 4
@@ -27,6 +28,7 @@ unsigned long systemPeriod = 10; // milliseconds
 int timer = 0;
 bool sampleFlagBottom = false;
 bool pumpFlag = false;
+bool ledFlag = false;
 bool circulationFanOnFlag = true;
 
 //#FSM_Sensordata#
@@ -48,7 +50,7 @@ float meanDistance = 0;
 typedef struct {uint8_t x; float y;} point;
 const uint8_t waterLevelArraySize = 19;
 point point2, point1;
-float m, waterLevel = 0;
+float m, waterLevelVal = 0;
 point waterLevelArray [waterLevelArraySize] = 
 {
 {0, 32.89},
@@ -90,5 +92,11 @@ union my_can_msg {
   unsigned long value;
   unsigned char bytes[4];
 };
+
+//FSM_Leds#
+enum class ledsStates:uint8_t{
+  LedsOn, LedsOff
+};
+ledsStates ledsState = ledsStates::LedsOff;
 
 #endif

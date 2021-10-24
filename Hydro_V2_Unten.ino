@@ -25,8 +25,8 @@ HCSR04 hc(Trig, Echo); //HCSR04 (trig pin , echo pin)
 //#Mosfet
 MOSFET fan(CirculationFan);
 //#Can
-CanBuffer canBuffer;
-CanFloatBuffer canFloatBuffer;
+volatile CanBuffer canBuffer;
+volatile CanFloatBuffer canFloatBuffer;
 //Objects Can Comm
 volatile CanFrameStream cfStream;
 MCP2515 mcp2515(A3); //SS pin A3
@@ -36,26 +36,26 @@ void setup() {
   Serial.begin(9600);
   dhtSensor.begin();
   Wire.begin();
-  SPI.usingInterrupt(0);
+  SPI.usingInterrupt(InterruptPin);
   mcp2515.reset();
   mcp2515.setBitrate(CAN_1000KBPS, MCP_16MHZ);
   mcp2515.setNormalMode();
   //#Pins
   pinMode(Pump, OUTPUT);
-  attachInterrupt(0, irqHandler, FALLING);
-  pumpFlag = true; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  pinMode(LED, OUTPUT);
+  attachInterrupt(InterruptPin, irqHandler, FALLING);
 }
 
 void loop() {
   unsigned long currentTime = millis();
   if ( currentTime - previousTime >= systemPeriod ) {
     previousTime = currentTime;
-
+    //#CAN
+    FSM_CanRead();
     //#State Machines
-    //FSM_Sensordata();
+    FSM_Sensordata();
     FSM_Pump();
     FSM_CirculationFan();
-    FSM_CanRead();
     masterDummy();
 
   }
@@ -69,15 +69,5 @@ void masterDummy() {
       message = 0;
       testFlag = true;
     }
-  }
-  if (pumpFlag)
-    pumpFlag = false;
-
-  timer++;
-  if (timer == 1000) {
-    circulationFanOnFlag = false;
-  }else if (timer==2000){
-        timer = 0;
-    circulationFanOnFlag = true;
   }
 };

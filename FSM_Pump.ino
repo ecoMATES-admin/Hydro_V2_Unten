@@ -1,9 +1,11 @@
 
 
 void FSM_Pump() {
+  uint8_t exponent;
   switch (pumpState) {
     case pumpStates::Idle:
       if (pumpFlag) {
+        pumpFlag = false;
         pumpState = pumpStates::PumpOn;
       }
       break;
@@ -41,9 +43,9 @@ void FSM_Pump() {
       break;
     case pumpStates::CalculateWaterLevel:
       if (meanDistance <= waterLevelArray[waterLevelArraySize - 1].y) {
-        waterLevel = 18.0;
+        waterLevelVal = 18.0;
       } else if (meanDistance >= waterLevelArray[0].y) {
-        waterLevel = 0.0;
+        waterLevelVal = 0.0;
       } else {
         for (uint8_t i = waterLevelArraySize - 1; i >= 0; i--) {
           if (meanDistance <= waterLevelArray[i].y) {
@@ -53,8 +55,10 @@ void FSM_Pump() {
           }
         }
         m = (point2.y - point1.y) / (float(point2.x - point1.x));
-        waterLevel = 1 / m * (meanDistance - point1.y) + float(point1.x);
+        waterLevelVal = 1 / m * (meanDistance - point1.y) + float(point1.x);
       }
+      exponent = getExponent(waterLevelVal);
+      canWrite(8,exponent,floatToCan(waterLevelVal,exponent));
       if (DEBUG) {
         Serial.print("point1.x:");
         Serial.println(point1.x);
@@ -67,7 +71,7 @@ void FSM_Pump() {
         Serial.print("m:");
         Serial.println(m);
         Serial.print("Wasserstand:");
-        Serial.println(waterLevel);
+        Serial.println(waterLevelVal);
       }
       pumpState = pumpStates::Idle;
       break;

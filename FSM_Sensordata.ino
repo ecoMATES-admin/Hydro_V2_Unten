@@ -1,5 +1,6 @@
 
 void FSM_Sensordata() {
+  uint8_t exponent1, exponent2;
   switch (sensorState) {
     case sensorStates::Idle:
       if (sampleFlagBottom) {
@@ -9,6 +10,10 @@ void FSM_Sensordata() {
       break;
     case sensorStates::ReadTempBottom:
       if (!dhtSensor.readTempAndHumidity(tempHumVal)) {
+        exponent1 = getExponent(tempHumVal[1]);
+        exponent2 = getExponent(tempHumVal[0]);
+        canWrite(3,exponent1, floatToCan(tempHumVal[1],exponent1));
+        canWrite(4,exponent2, floatToCan(tempHumVal[0],exponent2));
         if (DEBUG) {
           Serial.print("H1: ");
           Serial.print(tempHumVal[0]);
@@ -25,8 +30,10 @@ void FSM_Sensordata() {
     case sensorStates::ReadTempWater:
       waterTempSensor.requestTemperatures();
       waterTempVal = waterTempSensor.getTempCByIndex(0);
+      exponent1 = getExponent(waterTempVal);
+      canWrite(5,exponent1,floatToCan(waterTempVal,exponent1));
       if (DEBUG) {
-        if (waterTempVal == -7040) {
+        if (waterTempVal == -7040) { //information taken from library
           Serial.println("Error: Failed to get new watertemp value.");
         } else {
           Serial.print("WaterTemp: ");
@@ -62,6 +69,10 @@ void FSM_Sensordata() {
         //watchdog
         Serial.println("Error: No new valid EC reading");
       }
+        exponent1 = getExponent(phVal);
+        exponent2 = getExponent(ecVal);
+        canWrite(7,exponent1, floatToCan(phVal,exponent1));
+        canWrite(6,exponent2, floatToCan(ecVal,exponent2));
       if (DEBUG) {
         Serial.print("PH: ");
         Serial.print(phVal);

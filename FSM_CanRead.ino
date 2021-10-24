@@ -8,10 +8,17 @@ void FSM_CanRead() {
   if (canBuffer.read(tempInst)) {
     switch (tempInst.data[1]) {
       case 0:
+        sampleFlagBottom = true;
         break;
       case 1:
+      pumpFlag = true;
         break;
       case 2:
+        if(tempInst.data[0]==1){
+          ledFlag = true;
+        }else if(tempInst.data[0]==0){
+          ledFlag = false;
+        }
         break;
       case 9:
         break;
