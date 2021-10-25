@@ -36,14 +36,16 @@ void setup() {
   Serial.begin(9600);
   dhtSensor.begin();
   Wire.begin();
-  SPI.usingInterrupt(InterruptPin);
+  SPI.usingInterrupt(digitalPinToInterrupt(InterruptPin));
   mcp2515.reset();
   mcp2515.setBitrate(CAN_1000KBPS, MCP_16MHZ);
   mcp2515.setNormalMode();
   //#Pins
   pinMode(Pump, OUTPUT);
   pinMode(LED, OUTPUT);
-  attachInterrupt(InterruptPin, irqHandler, FALLING);
+  pinMode(A3, OUTPUT);
+  pinMode(InterruptPin, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(InterruptPin), irqHandler, FALLING);
 }
 
 void loop() {
@@ -51,12 +53,15 @@ void loop() {
   if ( currentTime - previousTime >= systemPeriod ) {
     previousTime = currentTime;
     //#CAN
-    FSM_CanRead();
+    canRead();
+    
     //#State Machines
+    FSM_CanRead();
     FSM_Sensordata();
     FSM_Pump();
+    FSM_Leds();
     FSM_CirculationFan();
-    masterDummy();
+    //masterDummy();
 
   }
 }

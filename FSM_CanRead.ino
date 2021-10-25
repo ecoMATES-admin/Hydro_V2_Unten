@@ -149,6 +149,7 @@ void canRead() { //!!!!Check excecution time -> Read out one message at a time?!
   }
 }
 void irqHandler() {
+  Serial.println("irqHandler");
   can_frame frm;
   uint8_t irq = mcp2515.getInterrupts();
   //check messages in buffer 0
