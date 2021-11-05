@@ -2,7 +2,7 @@
 #define GLOBAL_VARIABLES_H
 
 //## Pinning##
-#define InterruptPin 2 //Arduino pin 2
+#define InterruptPin 0 //Arduino pin 2
 //#Sensors
 #define TempHum 3
 #define WaterTemp 4
