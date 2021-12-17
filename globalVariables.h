@@ -11,7 +11,7 @@
 //#Actuators
 #define Pump 6
 #define LED 7
-#define DIMM 0
+#define BUTTON 5
 #define CirculationFan 10
 
 #define MSB 1
@@ -74,9 +74,9 @@ point waterLevelArray [waterLevelArraySize] =
 {18, 11.18}
 };
 enum class pumpStates:uint8_t{
-  Idle, PumpOn, PumpOff, ReadWaterDistance, CalculateWaterLevel
+  Idle, PumpOn, PumpOff, ReadWaterDistance, CalculateWaterLevel, DebounceOn, DebounceOff, Maintenance
 };
-pumpStates  pumpState = pumpStates::Idle;
+pumpStates pumpState = pumpStates::Idle;
 
 //#FSM_CirculationFan#
 enum class circulationFanStates:uint8_t{

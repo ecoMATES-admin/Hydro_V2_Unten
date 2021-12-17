@@ -44,6 +44,7 @@ void setup() {
   pinMode(Pump, OUTPUT);
   pinMode(LED, OUTPUT);
   pinMode(A3, OUTPUT);
+  pinMode(BUTTON, INPUT_PULLUP);
   attachInterrupt(InterruptPin, irqHandler, FALLING);
 }
 

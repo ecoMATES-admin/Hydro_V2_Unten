@@ -64,7 +64,7 @@ void FSM_Sensordata() {
         Serial.println("Error: No new valid PH reading");
       }
       if (ecSensor.get_error() == Ezo_board::SUCCESS) {
-        ecVal = ecSensor.get_last_received_reading();
+        ecVal = ecSensor.get_last_received_reading()/1000;
       } else {
         //watchdog
         Serial.println("Error: No new valid EC reading");

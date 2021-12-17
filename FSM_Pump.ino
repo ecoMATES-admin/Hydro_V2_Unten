@@ -8,6 +8,8 @@ void FSM_Pump() {
         pumpFlag = false;
         pumpState = pumpStates::PumpOn;
       }
+      if(digitalRead(BUTTON)==LOW)
+        pumpState = pumpStates::DebounceOn;
       break;
     case pumpStates::PumpOn: //Übergangn gemessen: pumpCounter == 8072
       digitalWrite(Pump, HIGH);
@@ -75,6 +77,22 @@ void FSM_Pump() {
       }
       pumpState = pumpStates::Idle;
       break;
+    case pumpStates::DebounceOn:
+      pumpState = pumpStates::Maintenance;
+    break;
+    case pumpStates::DebounceOff:
+    pumpCounter++;
+    if(pumpCounter==2){
+      pumpCounter = 0;
+      digitalWrite(Pump, LOW);
+      pumpState = pumpStates::Idle;
+    }
+    break;
+    case pumpStates::Maintenance:
+    digitalWrite(Pump, HIGH);
+    if(digitalRead(BUTTON)==HIGH)
+        pumpState = pumpStates::DebounceOff;
+    break; 
     default:
       Serial.println("Error: FSM_Pump()");
   }
