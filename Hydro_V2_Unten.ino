@@ -1,19 +1,17 @@
 //##Libraries##
-#include <DHT.h>
 #include <Ezo_i2c.h>
 #include <Wire.h>
-#include <OneWire.h>
 #include <DallasTemperature.h>
 #include <HCSR04.h>
 #include <mcp2515.h>
+#include <Adafruit_SHT31.h>
 //##Header-Files##
 #include "globalVariables.h"
 #include "MOSFET.h"
 #include "CAN.h"
 //##Object intialization##
 //#TempHum#
-#define DHTTYPE DHT22
-DHT dhtSensor(TempHum, DHTTYPE);
+Adafruit_SHT31 shtBottom = Adafruit_SHT31();
 //#Watertemp
 OneWire oneWire(WaterTemp);
 DallasTemperature waterTempSensor(&oneWire);
@@ -34,8 +32,14 @@ MCP2515 mcp2515(A3); //SS pin A3
 void setup() {
   //#Objects
   Serial.begin(9600);
-  dhtSensor.begin();
   Wire.begin();
+  //TempHum
+  if (! shtBottom.begin(0x44) && DEBUG)   
+    Serial.println("Couldn't find shtBottom");
+  shtBottom.heater(false);
+  if (shtBottom.isHeaterEnabled()){
+    Serial.println("shtBottom heater is ON");
+  }
   SPI.usingInterrupt(InterruptPin);
   mcp2515.reset();
   mcp2515.setBitrate(CAN_1000KBPS, MCP_16MHZ);
