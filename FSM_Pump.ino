@@ -11,18 +11,19 @@ void FSM_Pump() {
       if(digitalRead(BUTTON)==LOW)
         pumpState = pumpStates::DebounceOn;
       break;
-    case pumpStates::PumpOn: //Übergangn gemessen: pumpCounter == 8072
+    case pumpStates::PumpOn: 
+    
       digitalWrite(Pump, HIGH);
       pumpCounter++;
-      if (pumpCounter == 8072) {
+      if (pumpCounter == 12000) { //2 minutes water on
         pumpCounter = 0;
         pumpState = pumpStates::PumpOff;
       }
       break;
-    case pumpStates::PumpOff:  //Übergangn gemessen: pumpCounter == 21067
+    case pumpStates::PumpOff:  //4 minutes break to let water flow back
       digitalWrite(Pump, LOW);
       pumpCounter++;
-      if (pumpCounter == 21067) {
+      if (pumpCounter == 24000) {
         pumpCounter = 0;
         pumpState = pumpStates::ReadWaterDistance;
       }
